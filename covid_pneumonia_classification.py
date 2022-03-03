@@ -83,3 +83,38 @@ history = model.fit(
     callbacks=[es]
 )
 
+
+fig = plt.figure()
+ax1 = fig.add_subplot(2,1,1)
+ax1.plot(history.history['categorical_accuracy'])
+ax1.plot(history.history['val_categorical_accuracy'])
+ax1.set_title('Model Accuracy')
+ax1.set_xlabel('Epoch')
+ax1.set_ylabel('Accuracy')
+ax1.legend(['Train', 'Validation'], loc='upper left')
+
+ax2 = fig.add_subplot(2,1,2)
+ax2.plot(history.history['auc'])
+ax2.plot(history.history['val_auc'])
+ax1.set_title('Model AUC')
+ax2.set_xlabel('Epoch')
+ax2.set_ylabel('AUC')
+ax1.legend(['Train', 'Validation'], loc='upper left')
+
+fig.tight_layout
+
+plt.show()
+
+steps_per_epoch = np.math.ceil(val_iterator.samples / val_iterator.batch_size)
+predictions = model.predict(val_iterator, steps=steps_per_epoch)
+
+y_true = val_iterator.classes
+y_pred = np.argmax(predictions, axis=1)
+
+class_labels = list(val_iterator.class_indices.keys())
+
+cm = confusion_matrix(y_true, y_pred)
+report = classification_report(y_true,y_pred, target_names=class_labels)
+
+print("Confusion Matrix: ", cm)
+print("Classifcation Metrics Report: ", report)
